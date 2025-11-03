@@ -306,14 +306,14 @@ locals {
       kubernetes_major_version = substr(lookup(v, "kubernetes_version", ""), 1, 4)
       kubernetes_minor_version = substr(lookup(v, "kubernetes_version", ""), 1, -1)
       ubuntu_release = try(
-        lookup(try(data.oci_core_image.workers[k], {}), "operating_system_version", null),
+        lookup(lookup(data.oci_core_image.workers, k, {}), "operating_system_version", null),
         lookup(v, "os_version", null)
       )
     }
     if lookup(v, "mode", var.worker_pool_mode) != "virtual-node-pool" &&
     contains(
       coalescelist(
-        split(" ", try(lookup(try(data.oci_core_image.workers[k], {}), "operating_system", ""), lookup(v, "os", ""))),
+        split(" ", try(lookup(lookup(data.oci_core_image.workers, k, {}), "operating_system", ""), lookup(v, "os", ""))),
         [lookup(v, "os", "")]
       ),
       "Ubuntu"
